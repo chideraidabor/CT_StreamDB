@@ -15,7 +15,6 @@ def connect_db():
     except Exception as e:
         print("Failed to connect:", e)
         exit()
-        
 
 
 def test_table_exists(conn, table_name):

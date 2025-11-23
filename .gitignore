@@ -3,6 +3,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# db files
+ct_streamdb.db
+imdb_data/
+*.tsv
+*.tsv.gz
+
 # C extensions
 *.so
 

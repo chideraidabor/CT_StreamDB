@@ -1,0 +1,423 @@
+/* -------------------- GLOBAL -------------------- */
+
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #f5e8da;      /* peach background */
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+/* -------------------- NAVBAR -------------------- */
+
+.navbar {
+    width: 100%;
+    background-color: #f5e8da;
+    padding-top: 40px;
+    padding-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 70px;
+}
+
+.navbar a {
+    font-size: 20px;
+    font-weight: 600;
+    color: #3b2f2f;
+    text-decoration: none;
+    letter-spacing: 1px;
+    margin: 0 50px;
+}
+
+.navbar a:hover {
+    opacity: 0.7;
+}
+
+/* underline across page */
+.nav-line {
+    width: 100%;
+    border-bottom: 1px solid #3b2f2f;
+    opacity: 0.25;
+    margin-top: -15px;
+}
+
+/* -------------------- HOME PAGE TEXT -------------------- */
+
+.welcome-text {
+    font-size: 54px;
+    font-weight: 800;
+    text-align: center;
+    color: #3b2f2f;
+    margin-top: 22vh;
+    letter-spacing: 0.5px;
+}
+
+/* -------------------- SEARCH BAR -------------------- */
+
+.search-wrapper {
+    width: 55%;
+    margin: 35px auto 0 auto;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 18px 25px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    outline: none;
+    color: #3b2f2f;
+}
+
+.search-input::placeholder {
+    color: #8d6f63;
+    opacity: 0.8;
+}
+
+.search-icon {
+    font-size: 26px;
+    color: #3b2f2f;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* -------------------- SERIES LIST GRID -------------------- */
+.page-title {
+    text-align: center;
+    font-size: 38px;
+    font-weight: 800;
+    color: #3b2f2f;
+    margin-top: 40px;
+    margin-bottom: 25px;
+}
+
+.series-grid {
+    width: 90%;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 40px;
+}
+
+/* Card container */
+.series-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.series-card:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Poster covers more space */
+.series-poster {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Info section */
+.series-info {
+    padding: 15px;
+    text-align: left;
+}
+
+.series-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #3b2f2f;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.series-meta {
+    font-size: 13px;
+    color: #7b6660;
+    line-height: 1.4;
+}
+
+
+/* -------------------- PAGINATION -------------------- */
+
+.pagination {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    background: #333;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.page-btn:hover {
+    opacity: 0.7;
+}
+
+/* -------------------- GENRE PAGE LAYOUT -------------------- */
+
+.genre-page {
+    display: flex;
+    width: 95%;
+    margin: 40px auto;
+    gap: 30px;
+}
+
+/* LEFT SIDEBAR */
+.genre-sidebar {
+    width: 240px;
+    background-color: #f0ddcd;
+    border-radius: 16px;
+    padding: 18px 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.genre-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3b2f2f;
+    margin-bottom: 12px;
+}
+
+/* Genre pill list */
+.genre-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.genre-pill {
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    color: #3b2f2f;
+    text-decoration: none;
+    background-color: #f9ece0;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    display: inline-block;
+}
+
+.genre-pill:hover {
+    background-color: #e2cbb9;
+    transform: translateX(2px);
+}
+
+.genre-pill.active {
+    background-color: #3b2f2f;
+    color: #f5e8da;
+}
+
+/* RIGHT CONTENT */
+.genre-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.genre-hint {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #7b6660;
+}
+
+/* -------------------- SETTINGS PAGE -------------------- */
+
+.settings-container {
+    width: 70%;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.settings-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.settings-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3b2f2f;
+    margin-bottom: 20px;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 15px;
+    color: #3b2f2f;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #c2b2a5;
+    background-color: #f9ece0;
+    color: #3b2f2f;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #c4b5a5;
+    transition: 0.4s;
+    border-radius: 22px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #3b2f2f;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* -----------------------------------
+   BEAUTIFUL WARM DARK MODE
+----------------------------------- */
+
+body.dark-mode {
+    background-color: #2b2320;      /* warm brown */
+    color: #f7e9d9;
+}
+
+/* NAVBAR */
+body.dark-mode .navbar {
+    background-color: #3a302c !important;
+}
+
+body.dark-mode .navbar a {
+    color: #f7e9d9 !important;
+}
+
+/* UNDERLINE */
+body.dark-mode .nav-line {
+    border-color: rgba(255,255,255,0.25);
+}
+
+/* CARDS */
+body.dark-mode .series-card,
+body.dark-mode .settings-card {
+    background-color: #3a302c;
+    color: #f7e9d9;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* GENRE SIDEBAR */
+body.dark-mode .genre-sidebar {
+    background-color: #3a302c;
+}
+
+/* GENRE PILLS */
+body.dark-mode .genre-pill {
+    background-color: #5d4c46;
+    color: #f7e9d9;
+}
+
+body.dark-mode .genre-pill.active {
+    background-color: #f7e9d9;
+    color: #3a302c;
+}
+
+/* TITLES */
+body.dark-mode .page-title {
+    color: #f7e9d9;
+}
+
+/* SERIES TEXT */
+body.dark-mode .series-title {
+    color: #f7e9d9;
+}
+
+body.dark-mode .series-meta {
+    color: #d4c5be;
+}
+
+/* SETTINGS TITLES + LABELS */
+body.dark-mode .settings-section-title,
+body.dark-mode .settings-row {
+    color: #f7e9d9;
+}
+
+/* SELECT DROPDOWN */
+body.dark-mode .settings-select {
+    background-color: #5d4c46;
+    color: #f7e9d9;
+    border-color: #7b6660;
+}
+
+/* Toggle switch track */
+body.dark-mode .slider {
+    background-color: #7a6b63;
+}
+
+/* Toggle active state */
+body.dark-mode input:checked + .slider {
+    background-color: #f7e9d9;
+}
+
+body.dark-mode input:checked + .slider:before {
+    background-color: #3a302c;
+}
+
+body.dark-mode .welcome-text {
+    color: #f5e8da !important;   /* same warm light tone as navbar */
+}

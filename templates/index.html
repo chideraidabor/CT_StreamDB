@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>CT StreamDB</title>
+</head>
+<body class="{% if settings.dark_mode %}dark-mode{% endif %}">
+
+
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/series_list">Series List</a>
+        <a href="/genre">Genre</a>
+        <a href="/settings">Settings</a>
+        <a href="/account">Account</a>
+    </div>
+    <div class="nav-line"></div>
+
+    <div class="welcome-text">Welcome to CT StreamDB</div>
+
+    <div class="search-wrapper">
+        <input type="text" class="search-input" placeholder="Search for a TV Series">
+        <span class="search-icon">🔍</span>
+    </div>
+
+</body>
+</html>

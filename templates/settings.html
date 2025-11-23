@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+    
+        // Load settings from DB
+        const res = await fetch("/api/settings/get");
+        const settings = await res.json();
+    
+        document.getElementById("darkModeToggle").checked = settings.dark_mode === 1;
+        document.getElementById("showWithPosters").checked = settings.poster_only === 1;
+        document.getElementById("fallbackPoster").checked = settings.fallback_enabled === 1;
+        document.getElementById("paginationSize").value = settings.pagination_size;
+    
+        applyTheme(settings.dark_mode === 1);
+    
+        async function save() {
+            const payload = {
+                dark_mode: document.getElementById("darkModeToggle").checked ? 1 : 0,
+                poster_only: document.getElementById("showWithPosters").checked ? 1 : 0,
+                fallback_enabled: document.getElementById("fallbackPoster").checked ? 1 : 0,
+                pagination_size: Number(document.getElementById("paginationSize").value)
+            };
+    
+            await fetch("/api/settings/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+    
+            applyTheme(payload.dark_mode === 1);
+        }
+    
+        document.getElementById("darkModeToggle").addEventListener("change", save);
+        document.getElementById("showWithPosters").addEventListener("change", save);
+        document.getElementById("fallbackPoster").addEventListener("change", save);
+        document.getElementById("paginationSize").addEventListener("change", save);
+    
+        function applyTheme(dark) {
+            if (dark) {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+        }
+    });
+</script>
+    
+
+<body class="{% if settings.dark_mode %}dark-mode{% endif %}">
+
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/series_list">Series List</a>
+    <a href="/genre">Genre</a>
+    <a href="/settings">Settings</a>
+    <a href="/account">Account</a>
+</div>
+<div class="nav-line"></div>
+
+<h1 class="page-title" style="text-align:center; margin-top:40px;">
+    Settings
+</h1>
+
+<div class="settings-container">
+
+    <!-- THEME SETTINGS -->
+    <div class="settings-card">
+        <h2 class="settings-section-title">Theme</h2>
+
+        <div class="settings-row">
+            <span>Dark Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+
+    <!-- APP SETTINGS -->
+    <div class="settings-card">
+        <h2 class="settings-section-title">App Settings</h2>
+
+        <div class="settings-row">
+            <span>Show only series with posters</span>
+            <label class="switch">
+                <input type="checkbox" id="showWithPosters">
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="settings-row">
+            <span>Enable fallback posters</span>
+            <label class="switch">
+                <input type="checkbox" id="fallbackPoster" checked>
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="settings-row">
+            <span>Pagination Size</span>
+            <select class="settings-select" id="paginationSize">
+                <option value="50">50 per page</option>
+                <option value="100" selected>100 per page</option>
+                <option value="150">150 per page</option>
+            </select>
+        </div>
+    </div>
+
+
+    <!-- ABOUT -->
+    <div class="settings-card">
+        <h2 class="settings-section-title">About</h2>
+
+        <div class="settings-about">
+            <p><strong>CT StreamDB</strong> — Advanced Database Management project for browsing IMDb TV series.</p>
+            <p>Version: <strong>1.0.0</strong></p>
+            <p>
+                GitHub: 
+                <a href="https://github.com/chideraidabor/CT_StreamDB" target="_blank">
+                    github.com/chideraidabor/CT_StreamDB
+                </a>
+            </p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
