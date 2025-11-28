@@ -27,7 +27,8 @@ def create_tables():
             description   TEXT,
             start_year    INTEGER,
             end_year      INTEGER,
-            imdb_id       TEXT UNIQUE
+            imdb_id       TEXT UNIQUE,
+            poster_url    TEXT
         );
 
         CREATE TABLE Seasons (

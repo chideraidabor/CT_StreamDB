@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% if settings.dark_mode %}dark-mode{% endif %}">
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/series_list">Series List</a>
+    <a href="/genre">Genre</a>
+    <a href="/settings">Settings</a>
+    <a href="/account">Account</a>
+</div>
+<div class="nav-line"></div>
+
+<h1 class="page-title">Results for "{{ query }}"</h1>
+
+<div class="series-grid">
+    {% for s in results %}
+    <div class="series-card">
+        <img 
+            src="{{ s.poster_path }}"
+            onerror="this.src='{{ url_for('static', filename='img/no_img.png') }}'"
+            class="series-poster"
+        >
+        <div class="series-info">
+            <div class="series-title">{{ s.title }}</div>
+            <div class="series-meta">
+                {{ s.genre }}<br>
+                {{ s.start_year }} – {{ s.end_year }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- PAGINATION -->
+<div class="pagination">
+    {% if has_prev %}
+        <a href="/search_page?q={{ query }}&page={{ page - 1 }}" class="page-btn">Previous</a>
+    {% endif %}
+
+    <span class="page-number">Page {{ page }}</span>
+
+    {% if has_next %}
+        <a href="/search_page?q={{ query }}&page={{ page + 1 }}" class="page-btn">Next</a>
+    {% endif %}
+</div>
+
+</body>
+</html>

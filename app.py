@@ -5,6 +5,7 @@ import re
 
 TMDB_API_KEY = "1ee35db2f7c81fe96d65852423b76a83"
 app = Flask(__name__)
+poster_cache = {}
 
 # ------------------------
 # DATABASE CONNECTION
@@ -52,6 +53,11 @@ def tmdb_search(endpoint, query):
 # SUPER POSTER FETCHER (settings aware)
 # ------------------------
 def get_poster(title, start_year=None, fallback_enabled=True):
+    # --- Check cache first ---
+    key = (title, start_year)
+    if key in poster_cache:
+        return poster_cache[key]
+
     BASE = "https://image.tmdb.org/t/p/w500"
     cleaned = clean_title(title)
 
@@ -67,24 +73,39 @@ def get_poster(title, start_year=None, fallback_enabled=True):
         queries.append(f"{cleaned} {start_year}")
 
     endpoints = ["tv", "multi"]
+
+    poster_url = None
+
     for q in queries:
         for ep in endpoints:
             r = tmdb_search(ep, q)
             if not r.get("results"):
                 continue
             best = r["results"][0]
+
             poster = best.get("poster_path")
             backdrop = best.get("backdrop_path")
-            if poster:
-                return BASE + poster
-            if backdrop:
-                return BASE + backdrop
 
-    # If fallback disabled, return None (so you can skip/handle)
-    if not fallback_enabled:
-        return None
-    # fallback image
-    return url_for('static', filename='img/no_img.png')
+            if poster:
+                poster_url = BASE + poster
+                break
+            if backdrop:
+                poster_url = BASE + backdrop
+                break
+        if poster_url:
+            break
+
+    if not poster_url:
+        if not fallback_enabled:
+            poster_cache[key] = None
+            return None
+
+        poster_url = url_for('static', filename='img/no_img.png')
+
+    # --- Store in cache before returning ---
+    poster_cache[key] = poster_url
+    return poster_url
+
 
 # ------------------------
 # ROUTES
@@ -127,6 +148,7 @@ def series_list():
             "poster_path": poster or url_for('static', filename='img/no_img.png')
         })
 
+    final.sort(key=lambda x: "no_img.png" in x["poster_path"])
     has_prev = page > 1
     # A simple way to check next page: if we got fewer rows than limit => maybe no next
     has_next = len(final) == limit
@@ -183,7 +205,7 @@ def genre():
                 "end_year": s["end_year"],
                 "poster_path": poster or url_for('static', filename='img/no_img.png')
             })
-
+        series_results.sort(key=lambda x: "no_img.png" in x["poster_path"])
         has_prev = page > 1
         has_next = len(page_slice) == limit
 
@@ -230,6 +252,73 @@ def settings_page():
 @app.route("/account")
 def account():
     return render_template("account.html")
+
+@app.route("/search_page")
+def search_page():
+    settings = load_settings()
+
+    query = request.args.get("q", "").strip()
+    page = int(request.args.get("page", 1))
+    limit = settings["pagination_size"]
+    poster_only = settings["poster_only"]
+    fallback_enabled = settings["fallback_enabled"]
+
+    if not query:
+        return render_template(
+            "search.html",
+            query="",
+            results=[],
+            page=1,
+            has_next=False,
+            has_prev=False
+        )
+
+    conn = get_conn()
+    rows = conn.execute(
+        """
+        SELECT *
+        FROM Series
+        WHERE title LIKE ?
+        ORDER BY title
+        """,
+        (f"%{query}%",)
+    ).fetchall()
+    conn.close()
+
+    # Add posters and filter
+    results = []
+    for r in rows:
+        poster = get_poster(r["title"], r["start_year"], fallback_enabled)
+        is_real = poster and "no_img.png" not in poster
+
+        if poster_only and not is_real:
+            continue
+
+        results.append({
+            "series_id": r["series_id"],
+            "title": r["title"],
+            "genre": r["genre"],
+            "start_year": r["start_year"],
+            "end_year": r["end_year"],
+            "poster_path": poster or "/static/img/no_img.png"
+        })
+    results.sort(key=lambda x: "no_img.png" in x["poster_path"])
+
+    # pagination
+    total = len(results)
+    start = (page - 1) * limit
+    end = start + limit
+    page_slice = results[start:end]
+
+    return render_template(
+        "search.html",
+        query=query,
+        results=page_slice,
+        page=page,
+        has_prev=page > 1,
+        has_next=end < total
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
