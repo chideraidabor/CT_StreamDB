@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ series.title if series else "Series Not Found" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        {% for season in seasons %}
+        #tab{{ season.season_number }}:checked ~ .tab-contents #content-tab{{ season.season_number }} {
+            display: block;
+        }
+        {% endfor %}
+    </style>
+</head>
+
+<body class="{{ 'dark-mode' if settings.dark_mode else '' }}">
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('series_list') }}" class="active">Series List</a>
+    <a href="{{ url_for('genre') }}">Genres</a>
+    <a href="{{ url_for('settings_page') }}">Settings</a>
+    <a href="{{ url_for('account') }}">Account</a>
+</div>
+<div class="nav-line"></div>
+
+{% if not series %}
+    <h1 class="page-title" style="text-align:center; margin-top:50px;">Series Not Found</h1>
+{% else %}
+
+
+
+<!-- ------------------ Top Section ------------------ -->
+<div class="top-container">
+
+    <!-- Series Details -->
+    <div class="series-details">
+        <div class="back-button-wrapper">
+            <a href="{{ url_for('series_list') }}" class="back-button">← Back to Series</a>
+        </div>
+        <img src="{{ series.poster_path }}" alt="{{ series.title }}">
+        <div class="series-info">
+            <p><strong>{{ series.title }}</strong></p>
+            <p>{{ series.genre }}</p>
+            <p>{{ series.start_year }}{% if series.end_year %} - {{ series.end_year }}{% endif %}</p>
+            <p>Overall Rating: {{ total_avg is not none and total_avg|round(1) or "N/A" }}</p>
+            <p>Seasons: {{ num_seasons }} | Episodes: {{ total_episodes }}</p>
+        </div>
+    </div>
+
+    <!-- Visualization -->
+<div class="chart-container">
+    <h3 class="chart-title">Season Ratings Overview</h3>
+
+    {# Create a mutable namespace variable #}
+    {% set ns = namespace(present_count=0) %}
+
+    {# Count seasons with real ratings #}
+    {% for s in season_chart %}
+        {% if s.avg is not none and (s.avg|string).strip() != "" %}
+            {% set ns.present_count = ns.present_count + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    {% if season_chart|length == 0 or ns.present_count == 0 %}
+        <p style="text-align:center; padding:40px; color:#7a6464;">
+            No ratings available.
+        </p>
+    {% else %}
+        <div class="bar-chart">
+
+            {% for s in season_chart %}
+                {% if s.avg is not none and (s.avg|string).strip() != "" %}
+                    {% set avg_value = s.avg|float %}
+                {% else %}
+                    {% set avg_value = 0 %}
+                {% endif %}
+
+                {% set height = (avg_value * 30) if avg_value else 5 %}
+
+                <div class="bar" style="--bar-height: {{ height }}px;">
+                    <div class="bar-value">
+                        {{ avg_value|round(1) if avg_value else "No rating available" }}
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="bar-labels">
+            {% for s in season_chart %}
+                <div class="bar-label">S{{ s.season }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<!-- ------------------ SEASON TABS ------------------ -->
+{% if seasons|length == 0 %}
+    <div class="tabs" style="text-align:center; padding:40px; color:#7a6464;">
+        No seasons available.
+    </div>
+{% else %}
+<div class="tabs">
+
+    <!-- Hidden radios + labels -->
+    {% for season in seasons %}
+        <input type="radio" name="season-tab" id="tab{{ season.season_number }}" {% if loop.first %}checked{% endif %}>
+        <label for="tab{{ season.season_number }}">{{ 'Season ' ~ season.season_number }}</label>
+    {% endfor %}
+
+    <div class="tab-contents">
+        {% for season in seasons %}
+            <div class="tab-content" id="content-tab{{ season.season_number }}">
+                <div class="season-card">
+
+                    <div class="season-title">
+                        Season {{ season.season_number }} — Avg: {{ season.avg_rating|default("N/A") }}
+                        ({{ season.num_episodes }} episodes)
+                    </div>
+
+                    {% if season.episodes|length == 0 %}
+                        <p style="text-align:center; padding:20px; color:#7a6464;">No episodes available.</p>
+                    {% else %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Episode #</th>
+                                    <th>Title</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ep in season.episodes %}
+                                    <tr>
+                                        <td>{{ ep.episode_number }}</td>
+                                        <td>{{ ep.title }}</td>
+                                        <td>{{ ep.rating|default("N/A") }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endif %}
+
+
+{% endif %}
+</body>
+</html>
