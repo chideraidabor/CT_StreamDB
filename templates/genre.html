@@ -12,7 +12,7 @@
 <div class="navbar">
     <a href="/">Home</a>
     <a href="/series_list">Series List</a>
-    <a href="/genre">Genre</a>
+    <a href="/genre" class="active">Genre</a>
     <a href="/settings">Settings</a>
     <a href="/account">Account</a>
 </div>
@@ -54,7 +54,9 @@
 
         <div class="series-grid">
             {% for s in series %}
-            <div class="series-card">
+            <a href="/series/{{ s['series_id'] }}" style="text-decoration:none; color:inherit;">
+                 <div class="series-card">
+                
 
                 <!-- Poster (falls back to no_img.png if needed) -->
                 <img
@@ -73,6 +75,8 @@
                     </div>
                 </div>
             </div>
+            </a>
+           
             {% endfor %}
         </div>
 

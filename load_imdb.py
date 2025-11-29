@@ -126,51 +126,23 @@ def main():
     seasons_batch = []
     episodes_batch = []
 
+    # Build a mapping from imdb_id to integer series_id
+    cur.execute("SELECT series_id, imdb_id FROM Series")
+    imdb_to_pk = {row[1]: row[0] for row in cur.fetchall()}
+
     # Insert series + seasons + episodes
     for imdb_series_id, info in series.items():
-
         if imdb_series_id not in episodes:
             continue
-
-        # -----------------------------
-        # Insert Series Row
-        # -----------------------------
-        series_batch.append(
-            (
-                info["title"],
-                info["genre"],
-                None,             # description (NULL for now)
-                info["start"],
-                info["end"],
-                imdb_series_id
-            )
-        )
-
-        if len(series_batch) >= BATCH_SIZE:
-            batch_insert(
-                cur,
-                """INSERT INTO Series
-                   (title, genre, description, start_year, end_year, imdb_id)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                series_batch,
-            )
-
-        # -----------------------------
-        # Organize episodes by season
-        # -----------------------------
+        pk_series_id = imdb_to_pk.get(imdb_series_id)
+        if pk_series_id is None:
+            continue
+        # Insert seasons + temp episodes
         season_map = defaultdict(list)
         for ep in episodes[imdb_series_id]:
             season_map[ep["season"]].append(ep)
-
-        # -----------------------------
-        # Insert Seasons + Temp Episodes
-        # -----------------------------
         for season_num, ep_list in season_map.items():
-
-            # Insert season now (SQLite assigns season_id later)
-            seasons_batch.append((imdb_series_id, season_num))
-
-            # Insert episodes with placeholder season_id (NULL)
+            seasons_batch.append((pk_series_id, season_num))
             for ep in ep_list:
                 episodes_batch.append(
                     (
@@ -180,17 +152,16 @@ def main():
                         None,                     # air_date
                         ratings.get(ep["id"]),     # rating
                         ep["id"],                  # imdb_id
-                        imdb_series_id,            # series_imdb
-                        season_num                 # season_tmp
+                        pk_series_id,               # series_id (integer)
+                        season_num                  # season_tmp
                     )
                 )
-
                 if len(episodes_batch) >= BATCH_SIZE:
                     batch_insert(
                         cur,
                         """INSERT INTO Episodes
                            (season_id, episode_number, title, air_date, rating,
-                            imdb_id, series_imdb, season_tmp)
+                            imdb_id, series_id, season_tmp)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                         episodes_batch,
                     )
@@ -215,42 +186,37 @@ def main():
         cur,
         """INSERT INTO Episodes
            (season_id, episode_number, title, air_date, rating,
-            imdb_id, series_imdb, season_tmp)
+            imdb_id, series_id, season_tmp)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
         episodes_batch,
     )
 
-
     print("\n=== PHASE 3: LINK EPISODES TO SEASONS ===")
 
-    # 1. Load season rows (we need series_imdb + season_number)
+    # Link episodes to seasons using correct integer series_id
     cur.execute("""
-        SELECT s.season_id, se.imdb_id AS series_imdb, s.season_number
-        FROM Seasons s
-        JOIN Series se ON s.series_id = se.series_id
+        SELECT e.rowid, s.season_id
+        FROM Episodes e
+        JOIN Seasons s
+          ON s.series_id = e.series_id
+         AND s.season_number = e.season_tmp
+        WHERE e.season_id IS NULL
     """)
+    pairs = cur.fetchall()
+    print(f"Found {len(pairs)} episode-season pairs to link.")
+    for episode_rowid, season_id in pairs:
+        cur.execute("UPDATE Episodes SET season_id = ? WHERE rowid = ?", (season_id, episode_rowid))
+    print(f"Bulk linking complete: {len(pairs)} episodes updated.")
 
-    seasons = cur.fetchall()
-
-    for season_id, series_imdb, season_number in seasons:
-
-        # 2. Update episodes that belong to this season
-        cur.execute("""
-            UPDATE Episodes
-            SET season_id = ?
-            WHERE series_imdb = ?
-              AND season_tmp = ?
-        """, (season_id, series_imdb, season_number))
-
-        # 3. Compute stats for the season
+    # Update stats for each season
+    cur.execute("SELECT season_id FROM Seasons")
+    for (season_id,) in cur.fetchall():
         cur.execute("""
             SELECT COUNT(*), AVG(rating)
             FROM Episodes
             WHERE season_id = ?
         """, (season_id,))
-
         count, avg_rating = cur.fetchone()
-
         cur.execute("""
             UPDATE Seasons
             SET num_episodes = ?, avg_rating = ?
@@ -258,7 +224,6 @@ def main():
         """, (count, avg_rating, season_id))
 
     print("✔ Episode linking complete")
-
 
     conn.commit()
     conn.close()

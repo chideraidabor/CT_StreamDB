@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+    
+
 <body class="{% if settings.dark_mode %}dark-mode{% endif %}">
+
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/series_list">Series List</a>
+    <a href="/genre">Genre</a>
+    <a href="/settings">Settings</a>
+    <a href="/account" class="active">Account</a>
+</div>
+<div class="nav-line"></div>
+
+<div class="account-content">
+<h1 class="page-title" style="text-align:center; margin-top:40px;">
+    Account
+</h1>
+
+
+    
+
+    <div class="settings-container">
+
+
+
+    <!-- APP SETTINGS -->
+    <div class="settings-card"  style="padding: 40px;">
+        
+        <div style="display: flex; justify-content: center; align-items: center;flex-direction: column; gap: 30px; margin-bottom: 20px;">
+            <div class="profile-pic">
+                <img src="/static/img/profile.png" alt="Profile">
+            </div>
+            <h2 class="settings-section-title" >Account Details</h2>
+        </div>
+        
+        <div class="account-info">
+            <div class="settings-row">
+            <span>First name</span>
+            <span>Temilola</span>
+        </div>
+
+        <div class="settings-row">
+            <span>Last name</span>
+            <span>Afolabi</span>
+        </div>
+
+        <div class="settings-row">
+            <span>Email</span>
+            <span>ytvtv@gmail.com</span>
+        </div>
+
+        <div class="settings-row">
+            <span>Date Joined</span>
+            <span>11/06/2025</span>
+        </div>
+        </div>
+        
+
+    </div>
+
+ 
+
+</div>
+
+
+
+
+</body>
+</html>
