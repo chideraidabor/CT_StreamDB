@@ -112,7 +112,48 @@ def get_poster(title, start_year=None, fallback_enabled=True):
 # ------------------------
 @app.route("/")
 def home():
-    return render_template("index.html")
+    settings = load_settings()
+    fallback_enabled = settings.get("fallback_enabled", 1)
+
+    conn = get_conn()
+
+    top_rows = conn.execute("""
+        SELECT 
+            s.series_id,
+            s.title,
+            s.start_year,
+            AVG(e.rating) AS avg_rating,
+            COUNT(e.rating) AS rated_count
+        FROM Series s
+        JOIN Seasons se ON se.series_id = s.series_id
+        JOIN Episodes e ON e.season_id = se.season_id
+        WHERE e.rating IS NOT NULL
+        GROUP BY s.series_id
+        HAVING COUNT(e.rating) >= 6
+        ORDER BY avg_rating DESC
+        LIMIT 10
+    """).fetchall()
+
+    conn.close()
+
+    # Add poster paths
+    top_series = []
+    for row in top_rows:
+        poster = get_poster(row["title"], row["start_year"], fallback_enabled)
+
+        top_series.append({
+            "series_id": row["series_id"],
+            "title": row["title"],
+            "avg_rating": row["avg_rating"],
+            "rated_count": row["rated_count"],
+            "poster_path": poster,
+        })
+
+    return render_template("index.html", top_series=top_series)
+
+# @app.route("/")
+# def home():
+#     return render_template("index.html")
 
 @app.route("/series_list")
 def series_list():
@@ -319,6 +360,123 @@ def search_page():
         has_next=end < total
     )
 
+
+@app.route("/series/<int:series_id>")
+def series_detail(series_id):
+    settings = load_settings()
+    fallback_enabled = settings.get("fallback_enabled", 1)
+
+    conn = get_conn()
+
+    # ---------------------------
+    # 1. SERIES METADATA
+    # ---------------------------
+    row = conn.execute(
+        "SELECT * FROM Series WHERE series_id = ?", (series_id,)
+    ).fetchone()
+
+    if not row:
+        conn.close()
+        return render_template("series_detail.html", series=None)
+
+    series = dict(row)
+    poster = get_poster(series["title"], series["start_year"], fallback_enabled)
+    series["poster_path"] = poster or url_for('static', filename='img/no_img.png')
+
+    # ---------------------------
+    # 2. OVERALL AVERAGE RATING
+    # ---------------------------
+    total_row = conn.execute(
+        """
+        SELECT AVG(e.rating) AS avg_rating
+        FROM Episodes e
+        JOIN Seasons s ON e.season_id = s.season_id
+        WHERE s.series_id = ? AND e.rating IS NOT NULL
+        """,
+        (series_id,)
+    ).fetchone()
+
+    total_avg = total_row["avg_rating"] if total_row["avg_rating"] is not None else None
+
+    # ---------------------------
+    # 3. GET ALL SEASONS
+    # ---------------------------
+    seasons_rows = conn.execute(
+        """
+        SELECT season_id, season_number
+        FROM Seasons
+        WHERE series_id = ?
+        ORDER BY season_number
+        """,
+        (series_id,)
+    ).fetchall()
+
+    seasons = []
+    total_episodes = 0
+
+    # Season-level chart data
+    season_chart = []
+
+    # ---------------------------
+    # 4. LOAD EPISODES PER SEASON
+    # ---------------------------
+    for s in seasons_rows:
+        episodes = conn.execute(
+            """
+            SELECT episode_number, title, rating
+            FROM Episodes
+            WHERE season_id = ?
+            ORDER BY episode_number
+            """,
+            (s["season_id"],)
+        ).fetchall()
+
+        ep_list = []
+        rated_values = []
+
+        for e in episodes:
+            ep_list.append({
+                "episode_number": e["episode_number"],
+                "title": e["title"],
+                "rating": e["rating"]
+            })
+            if e["rating"] is not None:
+                rated_values.append(e["rating"])
+
+        # compute season average (only rated episodes)
+        avg_rating = sum(rated_values) / len(rated_values) if rated_values else None
+
+        # add to total episode count
+        total_episodes += len(ep_list)
+
+        # append full season block for template
+        seasons.append({
+            "season_id": s["season_id"],
+            "season_number": s["season_number"],
+            "avg_rating": avg_rating,
+            "num_episodes": len(ep_list),
+            "episodes": ep_list
+        })
+
+        # chart data
+        season_chart.append({
+            "season": s["season_number"],
+            "avg": avg_rating if avg_rating is not None else 0,
+            "rated": len(rated_values),
+            "total": len(ep_list)
+        })
+
+    conn.close()
+
+    return render_template(
+        "series_detail.html",
+        series=series,
+        total_avg=total_avg,
+        seasons=seasons,
+        num_seasons=len(seasons),
+        total_episodes=total_episodes,
+        season_chart=season_chart
+    ) 
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -10,8 +10,11 @@ html, body {
     height: 100%;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
-}
 
+}
+body {
+    padding-top: 120px; 
+}
 /* -------------------- NAVBAR -------------------- */
 
 .navbar {
@@ -22,6 +25,12 @@ html, body {
     display: flex;
     justify-content: center;
     gap: 70px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    box-shadow: 0 14px 14px rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid #e0d5c9;
 }
 
 .navbar a {
@@ -37,10 +46,18 @@ html, body {
     opacity: 0.7;
 }
 
+.active {
+    color: #e85a4f !important;       /* highlight color */
+    font-weight: 600;
+    border-bottom: 1px solid #e85a4f;
+}
+      /*
+}
+
 /* underline across page */
 .nav-line {
     width: 100%;
-    border-bottom: 1px solid #3b2f2f;
+    
     opacity: 0.25;
     margin-top: -15px;
 }
@@ -52,7 +69,7 @@ html, body {
     font-weight: 800;
     text-align: center;
     color: #3b2f2f;
-    margin-top: 22vh;
+    margin-top: 10vh;
     letter-spacing: 0.5px;
 }
 
@@ -89,6 +106,16 @@ html, body {
     margin-left: 10px;
     cursor: pointer;
 }
+
+.section-divider {
+    width: 100%;
+    margin: 30px auto;
+    margin-top: 80px;
+    margin-bottom: 60px;
+    border: 0;
+    border-top: 1px solid #e0d3c7;
+}
+
 
 /* -------------------- SERIES LIST GRID -------------------- */
 .page-title {
@@ -421,3 +448,290 @@ body.dark-mode input:checked + .slider:before {
 body.dark-mode .welcome-text {
     color: #f5e8da !important;   /* same warm light tone as navbar */
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #3b2f2f;
+}
+
+table th, table td {
+    padding: 10px 6px;
+}
+
+table th {
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+table tr:not(:last-child) td {
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+body.dark-mode table {
+    color: #f7e9d9;
+}
+
+body.dark-mode table th, body.dark-mode table td {
+    border-color: rgba(255,255,255,0.15);
+}
+
+
+ /* ------------------ Top Container ------------------ */
+ .top-container {
+    width: 90%;
+            margin: 40px auto;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        /* ------------------ Series Details ------------------ */
+        .series-details {
+            width: 260px;
+            text-align: left;
+        }
+
+        .series-details img {
+            width: 220px;
+            border-radius: 12px;
+            /* margin-bottom: 14px; */
+        }
+
+        .series-info p {
+            margin: 6px 0;
+            color: #3b2f2f;
+        }
+
+        /* ------------------ Visualization ------------------ */
+        .chart-container {
+            flex: 1;
+            background-color: #f8f0e9;
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .chart-title {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #524141;
+        }
+
+        .bar-chart {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 20px;
+            height: 360px;
+            padding: 30px;
+        }
+
+        @keyframes growBars {
+            from { height: 0; }
+            to { height: var(--bar-height); }
+        }
+
+        .bar {
+            flex: 1;
+            max-width: calc(90% / {{ season_chart|length }}); /* AUTO WIDTH */
+            background: linear-gradient(180deg, #f58523, #e85a4f);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            color: #2d2d2d;
+            font-weight: 600;
+            animation: growBars 1.2s ease-out forwards;
+        }
+
+        .bar-value {
+            font-size: 12px;
+            position: absolute;
+            top: -20px;
+        }
+
+        .bar-labels {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 8px;
+        }
+
+        .bar-label {
+            flex: 1;
+            max-width: calc(90% / {{ season_chart|length }});
+            text-align: center;
+            font-size: 14px;
+            color: #3b2f2f;
+        }
+
+        /* ------------------ TABS ------------------ */
+        .tabs {
+            width: 100%;
+            margin: 40px auto;
+            background-color: #f8f0e9;
+            padding: 30px;
+            border-radius: 16px;
+        }
+
+        .tab-labels {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 8px;
+            /* background-color: #f78c6f; */
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        input[type="radio"] + label {
+            padding: 8px;
+            margin-right: 30px;
+            background-color: #f5e9df;
+            border-radius: 4px;
+        }
+
+        .tab-labels label {
+            padding: 10px 16px;
+            background: #edd5c2;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #3b2f2f;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        /* ACTIVE TAB COLOR */
+        input[type="radio"]:checked + label {
+            background: #e85a4f !important;
+            color: white !important;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        /* Show only correct tab */
+       
+
+        /* ------------------ Season Card ------------------ */
+        .season-card {
+            background-color: #f6eadf;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 30px;
+        }
+
+        .season-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #3b2f2f;
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0ddcd;
+            color: #3b2f2f;
+        }
+
+        td {
+            color: #3b2f2f;
+        }
+
+        .season-card table tbody {
+            display: block;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .season-card table thead,
+        .season-card table tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .profile-pic-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;   /* Centers horizontally */
+    margin-top: 40px;          /* Optional spacing */
+    align-self: center;
+}
+
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    border-radius:50%;       
+    overflow: hidden;        
+}
+
+.profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  
+}
+
+.account-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.back-button-wrapper {
+    
+    width: 90%;
+    margin: 20px auto;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 16px;
+    background-color: #e85a4f;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.2s;
+    
+}
+
+.back-button:hover {
+    background-color: #d24f45;
+    transform: translateX(-3px);
+}
+
+     /* ------------------ Dark Mode ------------------ */
+        body.dark-mode .chart-container { background-color: #3a302c; }
+        body.dark-mode .bar { background: linear-gradient(180deg, #f58523, #e85a4f)); }
+        body.dark-mode .bar-label, 
+        body.dark-mode .bar-value { color: #f7e9d9; }
+        body.dark-mode .season-card { background-color: #2a2320; color: #f7e9d9; }
+        body.dark-mode th { background-color: #5d4c46; color:#f7e9d9; }
+        body.dark-mode td { color: #f7e9d9; }
+        body.dark-mode .series-info p { color: #f7e9d9; }
+        body.dark-mode .tabs { background-color: #3a302c; }
+        body.dark-mode input[type="radio"] + label {background-color: #2a2320;}
+        body.dark-mode .season-title {color: #f7e9d9;}
+        body.dark-mode .chart-title {color: #f7e9d9;}
+         body.dark-mode .navbar {border-bottom: 1px solid #221c1a;}
+  

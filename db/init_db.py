@@ -55,6 +55,7 @@ def create_tables():
 
             imdb_id         TEXT,
             series_imdb     TEXT,
+            series_id       INTEGER,  -- ADDED: integer PK for series
             season_tmp      INTEGER,
 
             FOREIGN KEY (season_id)
