@@ -21,7 +21,8 @@
 
 <div class="series-grid">
     {% for s in results %}
-    <div class="series-card">
+    <a href="/series/{{ s['series_id'] }}" style="text-decoration:none; color:inherit;">
+         <div class="series-card">
         <img 
             src="{{ s.poster_path }}"
             onerror="this.src='{{ url_for('static', filename='img/no_img.png') }}'"
@@ -35,6 +36,8 @@
             </div>
         </div>
     </div>
+    </a>
+   
     {% endfor %}
 </div>
 

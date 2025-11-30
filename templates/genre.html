@@ -54,7 +54,8 @@
 
         <div class="series-grid">
             {% for s in series %}
-            <div class="series-card">
+            <a href="/series/{{ s['series_id'] }}" style="text-decoration:none; color:inherit;">
+                 <div class="series-card">
 
                 <!-- Poster (falls back to no_img.png if needed) -->
                 <img
@@ -73,6 +74,8 @@
                     </div>
                 </div>
             </div>
+            </a>
+           
             {% endfor %}
         </div>
 
