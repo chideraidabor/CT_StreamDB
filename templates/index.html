@@ -22,6 +22,8 @@
         <input type="text" class="search-input" placeholder="Search for a TV Series">
         <span class="search-icon">🔍</span>
     </div>
+    <div class="autocomplete-box"></div>
+
 
     <hr class="section-divider">
     
@@ -76,5 +78,54 @@
             if (e.key === "Enter") goSearch();
         });
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const input = document.querySelector(".search-input");
+    const box = document.querySelector(".autocomplete-box");
+
+    let timer = null;
+
+    input.addEventListener("input", () => {
+        const q = input.value.trim();
+
+        clearTimeout(timer);
+
+        if (q.length < 2) {
+            box.innerHTML = "";
+            box.style.display = "none";
+            return;
+        }
+
+        // debounce a little
+        timer = setTimeout(() => {
+            fetch(`/api/search_suggestions?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        box.innerHTML = "";
+                        box.style.display = "none";
+                        return;
+                    }
+
+                    box.innerHTML = data.map(s => `
+                        <div class="suggestion" data-id="${s.id}">
+                            ${s.title}
+                        </div>
+                    `).join("");
+
+                    box.style.display = "block";
+                });
+        }, 150);
+    });
+
+    // When clicking a suggestion → go to the series page
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("suggestion")) {
+            const id = e.target.dataset.id;
+            window.location.href = `/series/${id}`;
+        }
+    });
+    });
+
 </script>
     
