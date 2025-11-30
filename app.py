@@ -485,5 +485,26 @@ def series_detail(series_id):
         season_chart=season_chart
     ) 
 
+@app.route("/api/search_suggestions")
+def search_suggestions():
+    q = request.args.get("q", "").strip()
+
+    if not q:
+        return jsonify([])
+
+    conn = get_conn()
+    rows = conn.execute(
+        "SELECT series_id, title FROM Series WHERE title LIKE ? ORDER BY title LIMIT 8",
+        (f"%{q}%",)
+    ).fetchall()
+    conn.close()
+
+    # Return titles + IDs
+    return jsonify([
+        {"id": r["series_id"], "title": r["title"]}
+        for r in rows
+    ])
+
+
 if __name__ == "__main__":
     app.run(debug=True)
