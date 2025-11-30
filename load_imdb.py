@@ -249,8 +249,8 @@ def main():
     conn.commit()
     conn.close()
 
-    print("\n✔ Episode linking complete")
-    print("\n🎉 DONE! IMDb dataset loaded successfully.")
+    print("\n Episode linking complete")
+    print("\n DONE! IMDb dataset loaded successfully.")
 
 
 if __name__ == "__main__":

@@ -476,6 +476,18 @@ body.dark-mode table th, body.dark-mode table td {
     border-color: rgba(255,255,255,0.15);
 }
 
+/* Light mode default */
+.top-ten-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #3b2f2fbf;   /* warm dark text */
+}
+
+/* Dark mode override */
+body.dark-mode .top-ten-title {
+    color: #f5e8da !important;   /* same tone as navbar + welcome-text */
+}
 
  /* ------------------ Top Container ------------------ */
  .top-container {

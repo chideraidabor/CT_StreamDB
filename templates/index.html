@@ -26,7 +26,8 @@
     <hr class="section-divider">
     
     <div class="top-ten-container">
-    <h2 style="text-align:center; color:#3b2f2fbf;">Top 10 Rated Series</h2>
+    <h2 class="top-ten-title">Top 10 Rated Series</h2>
+
 
     <div class="series-grid">
         {% for s in top_series %}
@@ -44,7 +45,7 @@
                 {{ s["start_year"] or "" }} – {{ s["end_year"] or "" }}
             </div>
                 <!-- <div class="top-ten-rating">
-                    ⭐ {{ "%.2f"|format(s.avg_rating) }}  
+                     {{ "%.2f"|format(s.avg_rating) }}  
                     ({{ s.rated_count }} rated eps)
                 </div> -->
         </div>

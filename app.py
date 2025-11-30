@@ -121,7 +121,9 @@ def home():
         SELECT 
             s.series_id,
             s.title,
+            s.genre,
             s.start_year,
+            s.end_year,           -- ← ADD THIS BACK
             AVG(e.rating) AS avg_rating,
             COUNT(e.rating) AS rated_count
         FROM Series s
@@ -134,9 +136,9 @@ def home():
         LIMIT 10
     """).fetchall()
 
+
     conn.close()
 
-    # Add poster paths
     top_series = []
     for row in top_rows:
         poster = get_poster(row["title"], row["start_year"], fallback_enabled)
@@ -144,12 +146,17 @@ def home():
         top_series.append({
             "series_id": row["series_id"],
             "title": row["title"],
+            "genre": row["genre"],
+            "start_year": row["start_year"],
+            "end_year": row["end_year"], 
             "avg_rating": row["avg_rating"],
             "rated_count": row["rated_count"],
             "poster_path": poster,
         })
 
+
     return render_template("index.html", top_series=top_series)
+
 
 # @app.route("/")
 # def home():
