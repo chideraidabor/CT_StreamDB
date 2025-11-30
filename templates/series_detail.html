@@ -19,7 +19,7 @@
 <!-- NAVBAR -->
 <div class="navbar">
     <a href="{{ url_for('home') }}">Home</a>
-    <a href="{{ url_for('series_list') }}" class="active">Series List</a>
+    <a href="{{ url_for('series_list') }}" >Series List</a>
     <a href="{{ url_for('genre') }}">Genres</a>
     <a href="{{ url_for('settings_page') }}">Settings</a>
     <a href="{{ url_for('account') }}">Account</a>
@@ -38,7 +38,9 @@
     <!-- Series Details -->
     <div class="series-details">
         <div class="back-button-wrapper">
-            <a href="{{ url_for('series_list') }}" class="back-button">← Back to Series</a>
+            <button onclick="history.back()" class="back-button">Back</button>
+
+            <!-- <a href="{{ url_for('series_list') }}" class="back-button">← Back to Series</a> -->
         </div>
         <img src="{{ series.poster_path }}" alt="{{ series.title }}">
         <div class="series-info">
